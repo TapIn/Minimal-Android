@@ -1,0 +1,15 @@
+<resources>
+
+    <string name="app_name">CodeDay Cam</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_main">CodeDay Cam</string>
+    <string name="button_video">Record</string>
+    <string name="button_upload">Upload</string>
+    <string name="title_activity_upload">Upload</string>
+    <string name="button_to_main_activity">Take another video</string>
+    <string name="aws_bucket_name">codeday.tapin.tv</string>
+    <string name="aws_access_key">AKIAJDBX254H3PJLPGDQ</string>
+    <string name="aws_secret_key">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</string>
+    <string name="endpoint_root"> http://local.my.codeday.org/tapin/</string>
+
+</resources>
