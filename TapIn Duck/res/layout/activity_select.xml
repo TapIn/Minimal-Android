@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center" >
+
+    <LinearLayout android:id="@+id/layout_buttonImages"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <ImageButton android:id="@+id/imageButton_video"
+            android:layout_width="fill_parent"
+            android:layout_height="70dp"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/button_video"
+            android:onClick="recordVideo"
+            android:scaleType="fitCenter"
+            android:src="@drawable/record_btn2x" />
+
+        <ImageButton android:id="@+id/imageButton_upload"
+            android:layout_width="fill_parent"
+            android:layout_height="55dp"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/button_upload"
+            android:onClick="chooseVideo"
+            android:scaleType="fitCenter"
+            android:src="@drawable/upload_btn2x" />
+    </LinearLayout>
+
+    <LinearLayout android:id="@+id/layout_buttonText"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="5dp"
+        android:layout_below="@+id/layout_buttonImages" >
+
+        <Button android:id="@+id/button_video"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:onClick="recordVideo"
+            android:text="@string/button_video"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            android:textColor="@android:color/white" />
+        
+        <Button android:id="@+id/button_upload"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:onClick="chooseVideo"
+            android:text="@string/button_upload"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            android:textColor="@android:color/white" />
+    </LinearLayout>
+
+</RelativeLayout>
