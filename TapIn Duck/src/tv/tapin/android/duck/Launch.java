@@ -19,6 +19,12 @@ public class Launch extends Activity {
         Utilities.enroll(this);
         launchNextActivity();
     }
+    
+    @Override
+    public void onDestroy() {
+    	Application.mMixpanel.flush();
+    	super.onDestroy();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

@@ -15,5 +15,6 @@
     <string name="title_activity_login">Login</string>
     <string name="title_activity_launch">SSC</string>
     <string name="update_url">http://tapin.tv</string>
+    <string name="mixpanel_token">4580be938a7f078328625ecec7ddc5ad</string>
 
 </resources>

@@ -22,6 +22,12 @@ public class Select extends Activity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
         setContentView(R.layout.activity_select);        
     }
+    
+    @Override
+    public void onDestroy() {
+    	Application.mMixpanel.flush();
+    	super.onDestroy();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -30,11 +36,13 @@ public class Select extends Activity {
     } 
     
     public void recordVideo(View view) {
+    	Application.mMixpanel.track("Record", null);
     	Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
         startActivityForResult(takeVideoIntent, ACTION_TAKE_VIDEO);
     }
     
     public void chooseVideo(View view) {
+    	Application.mMixpanel.track("Upload", null);
     	Intent videoChooseIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
     	videoChooseIntent.setType("video/*");
     	startActivityForResult(videoChooseIntent, ACTION_CHOOSE_VIDEO);

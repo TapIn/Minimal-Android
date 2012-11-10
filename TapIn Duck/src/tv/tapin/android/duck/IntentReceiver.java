@@ -3,15 +3,16 @@ package tv.tapin.android.duck;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+
+import org.json.JSONException;
+import org.json.JSONObject;
  
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.provider.Settings.Secure;
 import android.util.Log;
- 
-import com.urbanairship.Logger;
+
 import com.urbanairship.UAirship;
 import com.urbanairship.push.PushManager;
  
@@ -21,6 +22,7 @@ public class IntentReceiver extends BroadcastReceiver {
         private static final String EXTRA_VIDEO = "video";
         private static final String EXTRA_UPDATE = "update";
         private static final String EXTRA_START_APP = "app";
+        private static final String EXTRA_URI = "uri";
         private Context context;
  
         @Override
@@ -28,10 +30,13 @@ public class IntentReceiver extends BroadcastReceiver {
                 Log.i(logTag, "Received intent: " + intent.toString());
                 this.context = context;
                 String action = intent.getAction();
+                
+                JSONObject properties = new JSONObject();               
  
                 if (action.equals(PushManager.ACTION_PUSH_RECEIVED)) {
  
                         int id = intent.getIntExtra(PushManager.EXTRA_NOTIFICATION_ID, 0);
+                        Application.mMixpanel.track("Notification Received", null);
  
                         Log.i(logTag, "Received push notification. Alert: "
                                         + intent.getStringExtra(PushManager.EXTRA_ALERT)
@@ -43,18 +48,31 @@ public class IntentReceiver extends BroadcastReceiver {
  
                         Log.i(logTag, "User clicked notification. Message: " + intent.getStringExtra(PushManager.EXTRA_ALERT));
                         
-                        //Log.i(logTag, intent.getExtras().getString("extra"));
-                        
                         if (intent.getExtras().containsKey(EXTRA_VIDEO)) {
+                        	try {
+								properties.put("type", EXTRA_VIDEO);
+							} catch (JSONException e) { }
                         	launchVideo(intent);                        	
                         }
                         else if (intent.getExtras().containsKey(EXTRA_UPDATE)) {
+                        	try {
+								properties.put("type", EXTRA_UPDATE);
+							} catch (JSONException e) { }
                         	launchUpdate(intent);                        	
                         }
                         else if (intent.getExtras().containsKey(EXTRA_START_APP)) {
+                        	try {
+								properties.put("type", EXTRA_START_APP);
+							} catch (JSONException e) { }
                         	launchApp(intent);                        	
                         }
-                        
+                        else if (intent.getExtras().containsKey(EXTRA_URI)) {
+                        	try {
+								properties.put("type", EXTRA_URI);
+							} catch (JSONException e) { }
+                        	launchUri(intent);                        	
+                        }                        
+                        Application.mMixpanel.track("Notification Opened", properties);
                         logPushExtras(intent);
  
 
@@ -63,9 +81,15 @@ public class IntentReceiver extends BroadcastReceiver {
                                         + ". Valid: " + intent.getBooleanExtra(PushManager.EXTRA_REGISTRATION_VALID, false));
                         logPushExtras(intent);
                         
+                        Application.mMixpanel.track("Notification Registration Finished", null);
+                        
                         Utilities.setSharedPreferencesString(context, Utilities.APID_PREF, PushManager.shared().getAPID());
                         Utilities.enroll(context);
                 }
+                
+                
+                
+                Application.mMixpanel.flush();
                     
         }
  
@@ -79,15 +103,16 @@ public class IntentReceiver extends BroadcastReceiver {
                 for (String key : keys) {
  
                         //ignore standard extra keys (GCM + UA)
-                        /*List<String> ignoredKeys = (List<String>)Arrays.asList(
+                        List<String> ignoredKeys = (List<String>)Arrays.asList(
                                         "collapse_key",//GCM collapse key
                                         "from",//GCM sender
-                                        PushManager.EXTRA_NOTIFICATION_ID,//int id of generated notification (ACTION_PUSH_RECEIVED only)
-                                        PushManager.EXTRA_PUSH_ID,//internal UA push id
-                                        PushManager.EXTRA_ALERT);//ignore alert
+                                        PushManager.EXTRA_REGISTRATION_VALID);
+                                        //PushManager.EXTRA_NOTIFICATION_ID,//int id of generated notification (ACTION_PUSH_RECEIVED only)
+                                        //PushManager.EXTRA_PUSH_ID,//internal UA push id
+                                        //PushManager.EXTRA_ALERT);//ignore alert
                         if (ignoredKeys.contains(key)) {
                                 continue;
-                        }*/
+                        }
                         Log.i(logTag, "Push Notification Extra: ["+key+" : " + intent.getStringExtra(key) + "]");
                 }
         }
@@ -95,18 +120,12 @@ public class IntentReceiver extends BroadcastReceiver {
         private void launchVideo(Intent intent) {
         	String videoID = intent.getStringExtra(EXTRA_VIDEO); 	
         	Uri uri = Uri.parse("http://ssc.studentrnd.org/watch/" + videoID + "?phone_id=" + Utilities.getSharedPreferenceString(context, Utilities.ANDROID_ID_PREF));
-        	Intent launch = new Intent(Intent.ACTION_VIEW, uri);
-        	launch.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        	
-        	UAirship.shared().getApplicationContext().startActivity(launch);
+        	launchViewIntent(intent, uri);
         }
         
         private void launchUpdate(Intent intent) {	
         	Uri uri = Uri.parse(context.getString(R.string.update_url));
-        	Intent launch = new Intent(Intent.ACTION_VIEW, uri);
-        	launch.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        	
-        	UAirship.shared().getApplicationContext().startActivity(launch);
+        	launchViewIntent(intent, uri);
         }
         
         private void launchApp(Intent intent) {
@@ -115,6 +134,19 @@ public class IntentReceiver extends BroadcastReceiver {
             launch.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
             UAirship.shared().getApplicationContext().startActivity(launch);
+        }
+        
+        private void launchUri(Intent intent) {
+        	Uri uri = Uri.parse(context.getString(R.string.update_url));
+        	launchViewIntent(intent, uri);
+
+        }
+        
+        private void launchViewIntent(Intent intent, Uri uri) {
+        	Intent launch = new Intent(Intent.ACTION_VIEW, uri);
+        	launch.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        	
+        	UAirship.shared().getApplicationContext().startActivity(launch);
         }
         
         

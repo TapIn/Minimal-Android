@@ -37,7 +37,12 @@ public class Upload extends Activity {
         Uri videoUri = (Uri) getIntent().getExtras().get(Select.VIDEO_URI);
         
         startUpload(videoUri);
-        
+    }
+    
+    @Override
+    public void onDestroy() {
+    	Application.mMixpanel.flush();
+    	super.onDestroy();
     }
     
     @Override
@@ -96,16 +101,15 @@ public class Upload extends Activity {
 					upload.waitForCompletion();
 				} catch (AmazonServiceException e) {
 					e.printStackTrace();
+					runOnUiThread(new Runnable() { public void run() { uploadFailed();}});
 				} catch (AmazonClientException e) {
 					e.printStackTrace();
+					runOnUiThread(new Runnable() { public void run() { uploadFailed();}});
 				} catch (InterruptedException e) {
 					e.printStackTrace();
+					runOnUiThread(new Runnable() { public void run() { uploadFailed();}});
 				}
-    	    	runOnUiThread(new Runnable() {
-    	    	     public void run() {
-    	    	    	 	uploadComplete();
-    	    	    	 }
-    	    	});
+    	    	runOnUiThread(new Runnable() { public void run() { uploadComplete();}});
     		}
     	}.start();
     	
@@ -126,5 +130,22 @@ public class Upload extends Activity {
     	uploading.setVisibility(View.GONE);
     	backButton.setVisibility(View.VISIBLE);
     	complete.setVisibility(View.VISIBLE);
+    	
+    	Application.mMixpanel.track("Upload Succeded", null);
+    }
+    
+    private void uploadFailed() {
+    	Button backButton = (Button) findViewById(R.id.button_to_select_activity);
+    	ProgressBar progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+    	TextView uploading = (TextView) findViewById(R.id.uploading_textView);
+    	TextView complete = (TextView) findViewById(R.id.complete_textView);
+    	progressBar.setVisibility(View.GONE);
+    	uploading.setVisibility(View.GONE);
+    	backButton.setVisibility(View.VISIBLE);
+    	backButton.setText("Try again");
+    	complete.setVisibility(View.VISIBLE);
+    	complete.setText("Upload failed");
+    	
+    	Application.mMixpanel.track("Upload Failed", null);
     }
 }

@@ -29,6 +29,12 @@ public class Login extends Activity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
         setContentView(R.layout.activity_login);
     }
+    
+    @Override
+    public void onDestroy() {
+    	Application.mMixpanel.flush();
+    	super.onDestroy();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -42,6 +48,8 @@ public class Login extends Activity {
         String password = editTextPassword.getText().toString();
     	
     	setLoginData(username, password);
+    	
+    	Application.mMixpanel.track("Login", null);
     	
     	tryLogin();
     }
@@ -89,6 +97,8 @@ public class Login extends Activity {
     public static void logout(Context context) {
     	Utilities.clearSharedPreferencesString(context, USERNAME_PREF);
     	//Utilities.clearSharedPreferencesString(context, PASSWORD_PREF);
+    	
+    	Application.mMixpanel.track("Logout", null);
     }
     
     public void clearLoginData() {
