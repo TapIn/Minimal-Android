@@ -18,7 +18,6 @@ import com.amazonaws.services.s3.transfer.TransferManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Activity;
-import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.view.Menu;
 import android.view.MenuItem;

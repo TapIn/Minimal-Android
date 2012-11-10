@@ -1,7 +1,6 @@
 package tv.tapin.android.duck;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import com.urbanairship.push.PushManager;
 
 import android.os.Bundle;
 import android.provider.Settings.Secure;
@@ -15,7 +14,9 @@ public class Launch extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Utilities.setSharedPreferencesString(this, Utilities.ANDROID_ID_PREF, Secure.getString(getBaseContext().getContentResolver(), Secure.ANDROID_ID));
-        enroll();
+        Utilities.setSharedPreferencesString(this, Utilities.APID_PREF, PushManager.shared().getAPID());
+
+        Utilities.enroll(this);
         launchNextActivity();
     }
 
@@ -24,13 +25,7 @@ public class Launch extends Activity {
         getMenuInflater().inflate(R.menu.activity_launch, menu);
         return true;
     }
-    
-    public void enroll() {
-    	Map<String, String> data = new LinkedHashMap<String,String>();
-        data.put("phone_id", Utilities.getSharedPreferenceString(this, Utilities.ANDROID_ID_PREF));
-		Utilities.postAsync(getString(R.string.endpoint_root) + "enroll", data);
-    }
-    
+     
     public void launchNextActivity() {
     	Intent intent = new Intent(this, Login.class);
         startActivity(intent);

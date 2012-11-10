@@ -7,7 +7,10 @@ import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.util.LinkedHashMap;
 import java.util.Map;
+
+import com.urbanairship.Logger;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -15,6 +18,7 @@ import android.content.SharedPreferences;
 public class Utilities {
 	public static final String PREFS_NAME = "SSCPrefs";
 	public static String ANDROID_ID_PREF = "android_id";
+	public static String APID_PREF = "apid";
 	
 	private static interface Callbackable<T> {
 		void Function();
@@ -39,6 +43,8 @@ public class Utilities {
     	String encodedData = "";
      	try {
      		for (Map.Entry<String, String> entry : data.entrySet()) {
+     			if (entry.getValue() == null)
+     				entry.setValue("");
      			encodedData += URLEncoder.encode(entry.getKey(), "UTF-8") + "=" + URLEncoder.encode(entry.getValue(), "UTF-8") + "&";
      		}
      		System.out.println("GET:" + encodedData);
@@ -84,6 +90,9 @@ public class Utilities {
     	String encodedData = "";
      	try {
      		for (Map.Entry<String, String> entry : data.entrySet()) {
+     			if (entry.getValue() == null) {
+     				entry.setValue("");
+     			}
      			encodedData += URLEncoder.encode(entry.getKey(), "UTF-8") + "=" + URLEncoder.encode(entry.getValue(), "UTF-8") + "&";
      		}
      		System.out.println("POST:" + urlString + " + " + encodedData);
@@ -142,7 +151,9 @@ public class Utilities {
 	
 	public static void setSharedPreferencesString(Context context, String key, String value) {
 		SharedPreferences.Editor editor = getSharedPreferencesEditor(context);
-		editor.putString(key, value);
+		if ((key != null) && (value != null)) {
+			editor.putString(key, value);
+		}
 		editor.apply();
 	}
 	
@@ -151,4 +162,12 @@ public class Utilities {
 		editor.remove(key);
 		editor.apply();
 	}
+	
+    public static void enroll(Context context) {
+    	Map<String, String> data = new LinkedHashMap<String,String>();
+        data.put("phone_id", Utilities.getSharedPreferenceString(context, Utilities.ANDROID_ID_PREF));
+        data.put("push", Utilities.getSharedPreferenceString(context, Utilities.APID_PREF));
+        Logger.info(data.toString());
+		Utilities.postAsync(context.getString(R.string.endpoint_root) + "enroll", data);	
+    }
 }

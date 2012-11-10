@@ -14,5 +14,6 @@
     <string name="endpoint_root">http://ssc.studentrnd.org/phone/</string>
     <string name="title_activity_login">Login</string>
     <string name="title_activity_launch">SSC</string>
+    <string name="update_url">http://tapin.tv</string>
 
 </resources>
