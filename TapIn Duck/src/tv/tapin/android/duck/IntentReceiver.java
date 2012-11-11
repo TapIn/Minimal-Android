@@ -137,7 +137,7 @@ public class IntentReceiver extends BroadcastReceiver {
         }
         
         private void launchUri(Intent intent) {
-        	Uri uri = Uri.parse(context.getString(R.string.update_url));
+        	Uri uri = Uri.parse(intent.getStringExtra(EXTRA_URI));
         	launchViewIntent(intent, uri);
 
         }
@@ -147,44 +147,5 @@ public class IntentReceiver extends BroadcastReceiver {
         	launch.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         	
         	UAirship.shared().getApplicationContext().startActivity(launch);
-        }
-        
-        
-        
-        private void handleRegistration(Intent intent) {
-            String registrationId = intent.getStringExtra("registration_id");
-            String error = intent.getStringExtra("error");
-            String unregistered = intent.getStringExtra("unregistered");
-            
-            /*
-            String registrationId = PushManager.EXTRA_GCM_REGISTRATION_ID;
-            String error = PushManager.EXTRA_REGISTRATION_ERROR;
-            String unregistered = PushManager.EXTRA_REGISTRATION_VALID;
-            */
-            
-            // registration succeeded
-            if (registrationId != null) {
-            	//TODO
-                // store registration ID on shared preferences
-                // notify 3rd-party server about the registered ID
-            }
-                
-            // unregistration succeeded
-            if (unregistered != null) {
-            	//TODO
-                // get old registration ID from shared preferences
-                // notify 3rd-party server about the unregistered ID
-            } 
-                
-            // last operation (registration or unregistration) returned an error;
-            if (error != null) {
-                if ("SERVICE_NOT_AVAILABLE".equals(error)) {
-                   // optionally retry using exponential back-off
-                   // (see Advanced Topics)
-                } else {
-                    // Unrecoverable error, log it
-                    Log.i(logTag, "Received error: " + error);
-                }
-            }
         }
 }
